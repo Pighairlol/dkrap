@@ -1,32 +1,43 @@
 # DK Rap Vocal Builder
 
-A MorshuTalk-inspired rap vocal sentence synthesizer. Drop in an isolated acapella, let the application automatically transcribe and analyze it, then type new text and generate a vocal from the available recorded material.
+A MorshuTalk-inspired rap vocal sentence synthesizer.
 
-## Intended workflow
+## Current workflow
 
-1. Drop an acapella into the application.
-2. The application transcribes it and performs phonetic/timing analysis automatically.
-3. It builds a searchable local vocal library.
-4. Type the sentence/lyrics you want.
-5. Generate and preview the reconstructed vocal.
-6. Export the result as WAV.
+1. Open the app.
+2. Select one or more isolated acapellas.
+3. Click **Analyze Vocals**.
+4. The app automatically transcribes the vocals, extracts word timestamps, phonemizes the words, and builds phrase/word/phoneme segments.
+5. Type arbitrary text.
+6. Click **GENERATE**.
+7. Export the result as WAV.
 
-The generator prioritizes larger natural recordings when possible (phrase -> word -> syllable -> phoneme) and falls back to smaller units when necessary.
+The generator prioritizes **phrase -> word -> phoneme** material, preserving larger natural recordings whenever the requested text exists in the source corpus.
 
-## Status
+## Why this version does not use WhisperX
 
-Early project scaffold. The first implementation will focus on automatic corpus analysis and basic text-to-vocal concatenation before adding advanced rap timing and pitch controls.
+The MVP only needs transcription plus word timestamps. It uses Faster-Whisper directly, avoiding Pyannote VAD, TorchCodec/FFmpeg setup, and WhisperX alignment initialization. This makes the Windows setup substantially smaller and more reliable.
 
-## Planned stack
+Phoneme timestamps are currently approximated across each word. This is deliberate for the first working version; a later version can add true forced phoneme alignment once the basic sentence builder is proven.
 
-- Python
-- Local speech-to-text
-- Forced alignment / phoneme timing
-- Grapheme-to-phoneme conversion
-- Local audio processing
-- Desktop GUI
-- PyInstaller Windows packaging
+## Windows development
 
-## Legal / source audio
+```bat
+python -m venv .venv
+.venv\\Scripts\\activate
+pip install -r requirements.txt
+python main.py
+```
 
-Only use vocal recordings you have the right to process and redistribute. The application itself does not ship copyrighted source vocals.
+The first transcription run downloads the selected Faster-Whisper model automatically.
+
+## Build the EXE
+
+```bat
+pip install pyinstaller
+pyinstaller DKRapBuilder.spec
+```
+
+The GitHub Actions workflow also builds a Windows artifact automatically on pushes to `main` and on manual workflow runs.
+
+Only use source recordings you have the right to process and redistribute.
